@@ -1,0 +1,42 @@
+<?php
+
+namespace Itsdp\FilepondServer;
+
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Itsdp\FilepondServer\Exceptions\InvalidPathException;
+
+class Filepond {
+    /**
+     * Converts the given path into a filepond server id
+     *
+     * @param string $path
+     * @return string
+     */
+    public function getServerIdFromPath($path) {
+        return Crypt::encryptString($path);
+    }
+
+    /**
+     * Converts the given filepond server id into a path
+     *
+     * @param string $serverId
+     * @return string
+     */
+    public function getPathFromServerId($serverId) {
+        
+        if(!trim($serverId)) {
+            throw new InvalidPathException();
+        }
+
+        $filePath = Crypt::decryptString($serverId);
+
+        // For Linux Server
+        /*if(!Str::startsWith($filePath, config('filepond.temporary_files_path'))) {
+            throw new InvalidPathException();
+        }*/
+
+        return $filePath;
+    }
+}
